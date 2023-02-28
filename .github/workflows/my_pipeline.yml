@@ -22,7 +22,7 @@ jobs: #ansible block
           echo "Application name: ${{ env.APPLICATION_NAME }}"
           echo "hello3"
 
-   my-deploy:
+  my-deploy:
     runs-on: ubuntu-latest
     needs: [my-test] # blocks dependencу
     steps:
