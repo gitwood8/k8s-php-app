@@ -6,7 +6,7 @@ env:
   CONTAINER_EXTERNAL_PORT: 1234
 
   CD_IMAGE_REPO_USER: "wood8"
-  CD_IMAGE_NAME_VERSION: "github-actions-cicd:${{ github.sha }}"
+  CD_IMAGE_NAME_VERSION: "github-actions-cicd"
 on:
   push:
     branches:
