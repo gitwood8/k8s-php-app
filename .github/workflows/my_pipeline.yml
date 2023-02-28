@@ -3,7 +3,6 @@
 name: Wood_CI
 
 #Задаем глобальные переменные
-
 env:
   APPLICATION_NAME: "me-file"
   PACKAGE_NAME: "docker-image-${{ github.sha }}" #переменная равна коду коммита
@@ -27,8 +26,20 @@ jobs: #ansible block
   my-deploy:
     runs-on: ubuntu-latest
     needs: [my-test] # blocks dependencу
+
+#job env
+    env:
+      VAR1: "variable 1"
+
     steps:
       - name: Execute commands
         run: |
           echo "Package name: ${{ env.PACKAGE_NAME }}"
           echo "hellovdvdvdvdv"
+#local env for step (task)
+      - name: print local env
+        run: |
+          echo "var1= ${{ env.VAR1 }}"
+          echo "Var_local = $LOCAL_VAR"
+        env:
+          LOCAL_VAR: "SUPER local env"
