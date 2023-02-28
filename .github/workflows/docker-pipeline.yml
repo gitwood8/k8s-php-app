@@ -52,4 +52,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: "${{ github.sha }}"
+          tags: ${{ env.CD_IMAGE_REPO_USER }}/${{ env.CD_IMAGE_NAME_VERSION }}:${{ github.sha }}
