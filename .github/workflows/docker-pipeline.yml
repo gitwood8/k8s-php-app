@@ -1,10 +1,12 @@
-name: Wood_CI
-#Задаем глобальные переменные
+name: Wood-CI-CD
 env:
-  APPLICATION_NAME: "me-file"
-  IMAGE_NAME: "image-${{ github.sha }}"
-  CONTAINER_NAME: "test-container"
+#  APPLICATION_NAME: "me-file"
+  CI_IMAGE_NAME: "image-${{ github.sha }}"
+  CI_CONTAINER_NAME: "test-container"
   CONTAINER_EXTERNAL_PORT: 1234
+
+  CD_IMAGE_REPO_USER: "wood8"
+  CD_IMAGE_NAME_VERSION: "github-actions-cicd:${{ github.sha }}"
 on:
   push:
     branches:
@@ -18,31 +20,33 @@ jobs:
       - name: Building image
         run: |
           echo -e "\n\n======================= Bilding Image =======================\n\n"
-          docker build -t ${{ env.IMAGE_NAME }} .
+          docker build -t ${{ env.CI_IMAGE_NAME }} .
           echo -e "\n\n======================= Runnig the Container =======================\n\n"
-          docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.CONTAINER_EXTERNAL_PORT }}:80 ${{ env.IMAGE_NAME }} 
-          echo -e "\n\n======================= Container Started =======================\n\n"
+          docker run -d --name ${{ env.CI_CONTAINER_NAME }} -p ${{ env.CONTAINER_EXTERNAL_PORT }}:80 ${{ env.CI_IMAGE_NAME }}
           echo -e "\n\n======================= Health Ckeck Started =======================\n\n"
           sleep 15
           docker inspect --format='{{json .State.Health}}' $(docker ps -q) | grep '\"Status\":\"healthy\"'
 
-  deploy-container:
+  push-to-dockerhub:
     runs-on: ubuntu-latest
     needs: [build-container]
-
-#job env
-    env:
-      VAR1: "variable 1"
-
     steps:
-      - name: Execute commands
-        run: |
-          echo "Package name: ${{ env.PACKAGE_NAME }}"
-          echo "hellovdvdvdvdv"
-#local env for step (task)
-      - name: print local env
-        run: |
-          echo "var1= ${{ env.VAR1 }}"
-          echo "Var_local = $LOCAL_VAR"
-        env:
-          LOCAL_VAR: "SUPER local env"
+      - name: Log in DockerHub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.WOOD_DOCKER_USERNAME }}
+          password: ${{ secrets.WOOD_DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.CD_IMAGE_REPO_USER }}/${{ env.CD_IMAGE_NAME_VERSION }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
