@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: gi clone my repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Building image
         run: |
           echo -e "\n\n======================= Bilding Image =======================\n\n"
@@ -32,8 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-container]
     steps:
-      - name: gi clone my repo
-        uses: actions/checkout@v1
+      - name: Clone git repo
+        uses: actions/checkout@v3
+
       - name: Log in DockerHub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
