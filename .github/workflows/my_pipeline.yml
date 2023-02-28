@@ -15,8 +15,10 @@ jobs: #ansible block
   my-test:
     runs-on: ubuntu-latest #docker FROM
     steps: #ansible tasks
+      - name: gi clone my repo
+        uses: actions/checkout@v1 # copy repo to contsiner
       - name: Print hello world
-        run: echo "Hello world" # ansible shell
+        run: ls -la # ansible shell
       - name: Execute commands
         run: |
           echo "Application name: ${{ env.APPLICATION_NAME }}"
