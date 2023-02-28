@@ -6,7 +6,7 @@ name: Wood_CI
 env:
   APPLICATION_NAME: "me-file"
   PACKAGE_NAME: "docker-image-${{ github.sha }}" #переменная равна коду коммита
-on:
+#on:
   push:
     branches:
       - main

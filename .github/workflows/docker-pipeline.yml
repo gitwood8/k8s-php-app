@@ -1,0 +1,47 @@
+name: Wood_CI
+#Задаем глобальные переменные
+env:
+  APPLICATION_NAME: "me-file"
+  IMAGE_NAME: "image-${{ github.sha }}"
+  CONTAINER_NAME: "test-container"
+  CONTAINER_EXTERNAL_PORT: 1234
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: gi clone my repo
+        uses: actions/checkout@v1
+      - name: Print hello world
+        run: |
+          echo -e "\n\n======================= Bilding Image =======================\n\n"
+          docker build -t ${{ env.IMAGE_NAME }} .
+          echo -e "\n\n======================= Runnig the Container =======================\n\n"
+          docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.CONTAINER_EXTERNAL_PORT }}:80 ${{ env.IMAGE_NAME }} 
+          echo -e "\n\n======================= Container Started =======================\n\n"
+          echo -e "\n\n======================= Health Ckeck =======================\n\n"
+          docker inspect --format='{{json .State.Health}}' $(docker ps -q) | grep '\"Status\":\"healthy\"'
+
+  deploy-container:
+    runs-on: ubuntu-latest
+    needs: [build-container]
+
+#job env
+    env:
+      VAR1: "variable 1"
+
+    steps:
+      - name: Execute commands
+        run: |
+          echo "Package name: ${{ env.PACKAGE_NAME }}"
+          echo "hellovdvdvdvdv"
+#local env for step (task)
+      - name: print local env
+        run: |
+          echo "var1= ${{ env.VAR1 }}"
+          echo "Var_local = $LOCAL_VAR"
+        env:
+          LOCAL_VAR: "SUPER local env"
