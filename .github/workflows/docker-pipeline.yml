@@ -1,6 +1,5 @@
 name: Wood-CI-CD
 env:
-#  APPLICATION_NAME: "me-file"
   CI_IMAGE_NAME: "image-${{ github.sha }}"
   CI_CONTAINER_NAME: "test-container"
   CONTAINER_EXTERNAL_PORT: 1234
